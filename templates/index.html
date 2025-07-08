@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head><title>VM Creator</title></head>
+<body>
+  <h2>Create a Lightweight VM</h2>
+
+  <form id="vmForm">
+    <label>VM Name:</label>
+    <input type="text" name="vm_name" required>
+
+    <br><label>Select OS:</label>
+    <select name="os">
+      <option value="alpine">Alpine Linux</option>
+      <option value="tinycore">Tiny Core Linux</option>
+      <option value="slitaz">SliTaz Linux</option> <!-- if ISO is downloaded -->
+      <option value="antix">antiX Linux</option>    <!-- if ISO is downloaded -->
+
+
+    </select>
+
+    <br><label>Memory (MB):</label>
+    <input type="number" name="memory" value="512" required>
+
+    <br><label>CPUs:</label>
+    <input type="number" name="cpus" value="1" required>
+
+    <br><button type="submit">Create VM</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('vmForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const params = new URLSearchParams(formData).toString();
+
+      const res = await fetch(`/create-vm?${params}`);
+      const text = await res.text();
+      document.getElementById('status').innerText = text;
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,24 @@
+<domain type="kvm">
+  <name>{{ vm_name }}</name>
+  <memory unit="MiB">{{ vm_memory }}</memory>
+  <vcpu>{{ vm_cpus }}</vcpu>
+  <os>
+    <type arch="x86_64" machine="pc">hvm</type>
+    <boot dev="cdrom"/>
+    <boot dev="hd"/>
+  </os>
+  <devices>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2"/>
+      <source file="/var/lib/libvirt/images/{{ vm_name }}.qcow2"/>
+      <target dev="vda" bus="virtio"/>
+    </disk>
+    <disk type="file" device="cdrom">
+      <driver name="qemu" type="raw"/>
+      <source file="{{ iso_path }}"/>
+      <target dev="hdc" bus="ide"/>
+      <readonly/>
+    </disk>
+    <graphics type="vnc" port="-1"/>
+  </devices>
+</domain>
