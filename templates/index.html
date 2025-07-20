@@ -1,33 +1,111 @@
 <!DOCTYPE html>
-<html>
-<head><title>VM Creator</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VM Creator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+      color: #444;
+    }
+
+    a button {
+      background-color: #007BFF;
+    }
+
+    a button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
 <body>
-  <h2>Create a Lightweight VM</h2>
+  <div class="container">
+    <h2>Create a Lightweight VM</h2>
 
-  <form id="vmForm">
-    <label>VM Name:</label>
-    <input type="text" name="vm_name" required>
+    <form id="vmForm">
+      <label>VM Name:</label>
+      <input type="text" name="vm_name" required>
 
-    <br><label>Select OS:</label>
-    <select name="os">
-      <option value="alpine">Alpine Linux</option>
-      <option value="tinycore">Tiny Core Linux</option>
-      <option value="slitaz">SliTaz Linux</option> <!-- if ISO is downloaded -->
-      <option value="antix">antiX Linux</option>    <!-- if ISO is downloaded -->
+      <label>Select OS:</label>
+      <select name="os" required>
+        <option value="alpine">Alpine Linux</option>
+        <option value="tinycore">Tiny Core Linux</option>
+        <option value="slitaz">SliTaz Linux</option>
+        <option value="ubuntu">Ubuntu Linux</option>
+        <option value="fedora">Fedora Linux</option>
+      </select>
 
+      <label>Memory (MB):</label>
+      <input type="number" name="memory" value="512" required>
 
-    </select>
+      <label>CPUs:</label>
+      <input type="number" name="cpus" value="1" required>
 
-    <br><label>Memory (MB):</label>
-    <input type="number" name="memory" value="512" required>
+      <button type="submit">Create VM</button>
+    </form>
 
-    <br><label>CPUs:</label>
-    <input type="number" name="cpus" value="1" required>
+    <a href="/view-database" style="text-decoration: none;">
+      <button type="button" style="margin-top: 10px;">View VM Database</button>
+    </a>
 
-    <br><button type="submit">Create VM</button>
-  </form>
-
-  <p id="status"></p>
+    <p id="status"></p>
+  </div>
 
   <script>
     document.getElementById('vmForm').onsubmit = async (e) => {

@@ -1,16 +1,19 @@
 - name: Create VM
   hosts: localhost
   become: true
+  vars:
+    vm_disk_path: "/var/lib/libvirt/images/{{ vm_name }}.qcow2"
+
   tasks:
     - name: Create qcow2 disk
       command: >
-        qemu-img create -f qcow2 /var/lib/libvirt/images/{{ vm_name }}.qcow2 8G
+        qemu-img create -f qcow2 {{ vm_disk_path }} 8G
       args:
-        creates: "/var/lib/libvirt/images/{{ vm_name }}.qcow2"
+        creates: "{{ vm_disk_path }}"
 
     - name: Create XML from template
       template:
-        src: fedora_template.xml.j2
+        src: "{{ os_type }}_template.xml.j2"
         dest: "/tmp/{{ vm_name }}.xml"
 
     - name: Define VM
