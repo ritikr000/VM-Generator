@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All VMs</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        table { border-collapse: collapse; width: 90%; margin: auto; background: white; }
+        th, td { padding: 10px; text-align: center; border: 1px solid #ccc; }
+        th { background-color: #007BFF; color: white; }
+        h2, h3 { text-align: center; }
+
+        .back-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 10px;
+            text-align: center;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h2>🧠 System Memory Status</h2>
+    <p style="text-align:center;">
+        Total: {{ system_memory.total }} MB |
+        Used: {{ system_memory.used }} MB |
+        Free: {{ system_memory.free }} MB
+    </p>
+
+    <h3>🟢 Live VMs (via libvirt)</h3>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>VM Name</th>
+            <th>Status</th>
+            <th>OS</th>
+            <th>Memory (MB)</th>
+            <th>CPUs</th>
+            <th>IP Address</th>
+        </tr>
+        {% for vm in vms %}
+        <tr>
+            <td>{{ vm.id }}</td>
+            <td>{{ vm.vm_name }}</td>
+            <td>{{ vm.status }}</td>
+            <td>{{ vm.os }}</td>
+            <td>{{ vm.memory }}</td>
+            <td>{{ vm.cpus }}</td>
+            <td>{{ vm.ip or "N/A" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>🗃️ Stored VMs (Database)</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>VM Name</th>
+            <th>OS</th>
+            <th>Memory (MB)</th>
+            <th>CPUs</th>
+            <th>IP Address</th>
+        </tr>
+        {% for vm in db_vms %}
+        <tr>
+            <td>{{ vm.id }}</td>
+            <td>{{ vm.vm_name }}</td>
+            <td>{{ vm.os_type }}</td>
+            <td>{{ vm.memory }}</td>
+            <td>{{ vm.cpus }}</td>
+            <td>{{ vm.ip or "N/A" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="/" class="back-btn">⬅️ Back to Home</a>
+</body>
+</html>
+

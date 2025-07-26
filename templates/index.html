@@ -11,6 +11,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
     .container {
@@ -40,6 +41,12 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #4CAF50;
+      outline: none;
     }
 
     button {
@@ -65,6 +72,14 @@
       color: #444;
     }
 
+    .success {
+      color: #28a745;
+    }
+
+    .error {
+      color: #dc3545;
+    }
+
     a button {
       background-color: #007BFF;
     }
@@ -81,21 +96,20 @@
     <form id="vmForm">
       <label>VM Name:</label>
       <input type="text" name="vm_name" required>
-
-      <label>Select OS:</label>
-      <select name="os" required>
-        <option value="alpine">Alpine Linux</option>
-        <option value="tinycore">Tiny Core Linux</option>
-        <option value="slitaz">SliTaz Linux</option>
-        <option value="ubuntu">Ubuntu Linux</option>
-        <option value="fedora">Fedora Linux</option>
-      </select>
+       
+       <label>Select OS:</label>
+       <select name="os" required>
+       <option value="ubuntu">Ubuntu Linux</option>
+       <option value="fedora">Fedora Linux</option>
+       <option value="linuxmint">Linux Mint Cinnamon</option> 
+       <option value="kali">Kali Linux</option>
+       </select>
 
       <label>Memory (MB):</label>
-      <input type="number" name="memory" value="512" required>
+      <input type="number" name="memory" value="5122" min="1" required>
 
       <label>CPUs:</label>
-      <input type="number" name="cpus" value="1" required>
+      <input type="number" name="cpus" value="5" min="1" required>
 
       <button type="submit">Create VM</button>
     </form>
@@ -112,10 +126,24 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       const params = new URLSearchParams(formData).toString();
+      document.getElementById('status').innerText = "Creating VM...";
 
-      const res = await fetch(`/create-vm?${params}`);
-      const text = await res.text();
-      document.getElementById('status').innerText = text;
+      try {
+        const res = await fetch(`/create-vm?${params}`);
+        const text = await res.text();
+        document.getElementById('status').innerText = text;
+
+        if (res.ok) {
+          document.getElementById('status').classList.add('success');
+          document.getElementById('status').classList.remove('error');
+        } else {
+          document.getElementById('status').classList.add('error');
+          document.getElementById('status').classList.remove('success');
+        }
+      } catch (error) {
+        document.getElementById('status').innerText = "❌ Error: Unable to create VM.";
+        document.getElementById('status').classList.add('error');
+      }
     }
   </script>
 </body>

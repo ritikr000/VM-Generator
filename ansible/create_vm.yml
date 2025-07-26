@@ -1,29 +1,56 @@
-- name: Create VM
+---
+- name: Create VM from base cloud image
   hosts: localhost
   become: true
   vars:
     vm_disk_path: "/var/lib/libvirt/images/{{ vm_name }}.qcow2"
+    base_images:
+      ubuntu: "/var/lib/libvirt/images/1ubuntu.qcow2"
+      fedora: "/var/lib/libvirt/images/fedora-2.qcow2"
+      linuxmint: "/var/lib/libvirt/images/linuxmint-cinnamon.qcow2"
+      kali: "/var/lib/libvirt/images/1kali.qcow2"
 
   tasks:
-    - name: Create qcow2 disk
-      command: >
-        qemu-img create -f qcow2 {{ vm_disk_path }} 8G
+    - name: Fail if invalid OS is provided
+      fail:
+        msg: "Invalid OS type '{{ os_type }}'. Allowed: ubuntu, fedora, linuxmint, kali"
+      when: base_images[os_type] is not defined
+
+    - name: Copy base cloud image
+      command: cp {{ base_images[os_type] }} {{ vm_disk_path }}
       args:
         creates: "{{ vm_disk_path }}"
 
-    - name: Create XML from template
+    - name: Create XML from Jinja2 template
       template:
         src: "{{ os_type }}_template.xml.j2"
         dest: "/tmp/{{ vm_name }}.xml"
 
-    - name: Define VM
-      virt:
-        name: "{{ vm_name }}"
-        command: define
-        xml: "{{ lookup('file', '/tmp/' + vm_name + '.xml') }}"
+    - name: Define the VM
+      command: virsh define /tmp/{{ vm_name }}.xml
 
-    - name: Start VM
-      virt:
-        name: "{{ vm_name }}"
-        state: running
+    - name: Start the VM
+      command: virsh start {{ vm_name }}
+
+    - name: Wait for VM to boot up
+      wait_for:
+        timeout: 20
+
+    - name: Wait for VM to get an IP address
+      shell: |
+        sleep 10
+        virsh domifaddr {{ vm_name }} --source lease | grep -w ipv4 | awk '{print $4}' | cut -d/ -f1
+      register: vm_ip
+      retries: 10
+      delay: 5
+      until: vm_ip.stdout != ""
+      changed_when: false
+
+    - name: Set fact for VM IP
+      set_fact:
+        vm_ip_address: "{{ vm_ip.stdout | trim }}"
+
+    - name: Print VM IP Address
+      debug:
+        msg: "VM '{{ vm_name }}' IP address is: {{ vm_ip_address }}"
 
